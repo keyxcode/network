@@ -118,3 +118,12 @@ def post(request, post_id):
         return JsonResponse({
             "error": "GET or PUT request required"
         }, status=400)
+
+
+def profile(request, user_id):
+    user = User.objects.get(pk=user_id)
+
+    return render(request, "network/profile.html", {
+        "user": user
+    }) 
+    
