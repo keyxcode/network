@@ -18,16 +18,16 @@
             {% if posts %}
                 {% for post in posts %}
                     <!-- Post box -->
-                    <div class="border rounded shadow-sm p-3 my-3">
+                    <div class="border rounded shadow-sm p-3 my-3 hover-box">
                         <div class="row">
                             <div class="col">
                                 <!-- Line 1: Poster - Timestamp -->
-                                <div>
+                                <div class="d-flex">
                                     <a href="{% url 'profile' post.poster.id %}">{{ post.poster }}</a>
-                                    <span class="text-muted font-italic">{{ post.timestamp }}</span> 
+                                    <span class="ml-auto small text-muted">{{ post.timestamp }}</span> 
                                 </div>
                                 <!-- Line 2: Post Content/ Edit Form -->
-                                <div class="mb-2">
+                                <div class="mb-2 text-justify">
                                     <span id="post-{{ post.id }}">{{ post.content }}</span>  
                                     {% if request.user == post.poster %}
                                         <form class="row d-none" id="form-{{ post.id }}">
@@ -42,7 +42,7 @@
                                 </div>
                                 <!-- Line 3: Like & Edit-->
                                 <div>
-                                    <span id="like-count-{{ post.id }}">{{ post.likers.all.count }}</span> 
+                                    <span class="font-weight-bold" id="like-count-{{ post.id }}">{{ post.likers.all.count }}</span> 
                                     {% if request.user in post.likers.all %}
                                         <button class="btn btn-primary btn-sm like-button" data-post="{{ post.id }}">Unlike</button>
                                     {% else %}
