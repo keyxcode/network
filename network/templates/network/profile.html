@@ -2,19 +2,76 @@
 {% load static %}
 
 {% block body %}
+    <!-- Profile details -->
     <div class="row border rounded shadow-sm my-3">
         <div class="col p-5 text-center">
             <span class="h1">{{ user.username }}</span>
-            <div class="row">
+            <div class="row my-2">
                 <div class="col">
-                    followers
+                    <span class="font-weight-bold">{{ user.followers.all.count }}</span> followers
                 </div>
             </div>
-            <div class="row">
+            <div class="row my-2">
                 <div class="col">
-                    following
+                    <span class="font-weight-bold">{{ user.follows.all.count }}</span> following
                 </div>
             </div>
+            {% if request.user != user %}
+                <div class="row my-2">
+                    <div class="col">
+                        <button class="btn btn-primary">Follow</button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <!-- News Feed -->
+    <div class="border rounded row mb-3 py-3">
+        <div class="col">
+            {% if posts %}
+                {% for post in posts %}
+                    <!-- Post box -->
+                    <div class="border rounded shadow-sm p-3 my-3">
+                        <div class="row">
+                            <div class="col">
+                                <!-- Line 1: Poster - Timestamp -->
+                                <div>
+                                    <a href="{% url 'profile' post.poster.id %}">{{ post.poster }}</a>
+                                    <span class="text-muted font-italic">{{ post.timestamp }}</span> 
+                                </div>
+                                <!-- Line 2: Post Content/ Edit Form -->
+                                <div class="mb-2">
+                                    <span id="post-{{ post.id }}">{{ post.content }}</span>  
+                                    {% if request.user == post.poster %}
+                                        <form class="row d-none" id="form-{{ post.id }}">
+                                            <div class="col-md-10">
+                                                <textarea class="form-control mb-2" id="edited-{{ post.id }}" rows="1">{{ post.content }}</textarea>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button class="btn btn-primary w-100" type="submit">Save</button>
+                                            </div>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                                <!-- Line 3: Like & Edit-->
+                                <div>
+                                    <span id="like-count-{{ post.id }}">{{ post.likers.all.count }}</span> 
+                                    {% if request.user in post.likers.all %}
+                                        <button class="btn btn-primary btn-sm like-button" data-post="{{ post.id }}">Unlike</button>
+                                    {% else %}
+                                        <button class="btn btn-outline-primary btn-sm like-button" data-post="{{ post.id }}">Like</button>                                       
+                                    {% endif %}
+                                    {% if request.user == post.poster %}
+                                        <button class="btn btn-outline-primary btn-sm edit-button" data-post="{{ post.id }}">Edit</button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                It's empty here!
+            {% endif %}
         </div>
     </div>
 {% endblock %}

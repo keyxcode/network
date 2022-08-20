@@ -122,8 +122,10 @@ def post(request, post_id):
 
 def profile(request, user_id):
     user = User.objects.get(pk=user_id)
+    posts = Post.objects.filter(poster=user).order_by('-timestamp')
 
     return render(request, "network/profile.html", {
-        "user": user
+        "user": user,
+        "posts": posts
     }) 
     

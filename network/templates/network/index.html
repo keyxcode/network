@@ -6,7 +6,7 @@
     <form action="{% url 'create_post' %}" class="border shadow-sm rounded row my-3" method="post">
         {% csrf_token %}
             <div class="col-md-10">
-                <textarea autofocus class="form-control my-3" name="content" placeholder="What's on your mind?" rows="1"></textarea>
+                <textarea class="form-control my-3" name="content" placeholder="What's on your mind?" rows="1"></textarea>
             </div>
             <div class="col-md-2">
                 <input class="btn btn-primary my-3 w-100" type="submit" value="Share">
@@ -23,7 +23,7 @@
                             <div class="col">
                                 <!-- Line 1: Poster - Timestamp -->
                                 <div>
-                                    <a href="#">{{ post.poster }}</a>
+                                    <a href="{% url 'profile' post.poster.id %}">{{ post.poster }}</a>
                                     <span class="text-muted font-italic">{{ post.timestamp }}</span> 
                                 </div>
                                 <!-- Line 2: Post Content/ Edit Form -->
