@@ -11,5 +11,5 @@ urlpatterns = [
     path("create_post", views.create_post, name="create_post"),
 
     # API
-    path("edit_post/<int:post_id>", views.edit_post, name="edit_post")
+    path("post/<int:post_id>", views.post, name="post")
 ]

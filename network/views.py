@@ -83,27 +83,38 @@ def create_post(request):
 
     return HttpResponseRedirect(reverse("index"))
 
+
 @csrf_exempt
 @login_required
-def edit_post(request, post_id):
+def post(request, post_id):
     # Query for requested post
     try:
         post = Post.objects.get(pk=post_id)
     except:
         return JsonResponse({"error": "Post not found."}, status=404)
     
+    # Return post contents
+    if request.method == "GET":
+        return JsonResponse(post.serialize())
+
     # Update the requested post
     if request.method == "PUT":
         data = json.loads(request.body)
         if data.get("content") is not None:
-            print(data["content"])
             post.content = data["content"]
+        if data.get("user") is not None:
+            user = User.objects.get(username=data["user"])
+            if post.likers.all().contains(user):
+                post.likers.remove(user)
+                print('no')
+            else:
+                post.likers.add(user)
+                print('yo')
         post.save()
         return HttpResponse(status=204)
     
     # Request method must be PUT
     else:
         return JsonResponse({
-            "error": "PUT request required"
+            "error": "GET or PUT request required"
         }, status=400)
-

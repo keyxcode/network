@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 edit_form.addEventListener('submit', e => {
                     e.preventDefault();
 
-                    fetch(`edit_post/${post_id}`, {
+                    fetch(`post/${post_id}`, {
                         method: 'PUT',
                         body: JSON.stringify({
                           content: edited_post.value
@@ -49,18 +49,36 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     })
 
-    // Like button behavior
+    // Like button behavior on click
     document.querySelectorAll('.like-button').forEach(e => {
         e.addEventListener('click', function() {
+            const post_id = this.dataset.post;
+            const user = document.querySelector('#user').innerHTML
+
             if (this.innerHTML === 'Like') {
                 this.innerHTML = 'Unlike';
                 this.classList.remove('btn-outline-primary');
                 this.classList.add('btn-primary');
-            } else if (this.innerHTML === 'Unlike') {
+            } else { 
                 this.innerHTML = 'Like';
                 this.classList.remove('btn-primary');
-                this.classList.add('btn-outline-primary');    
-            }
+                this.classList.add('btn-outline-primary');
+            }     
+            // Change the backend likes
+            fetch(`post/${post_id}`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    user: user
+                })
+            })
+            .then(() => {
+                fetch(`post/${post_id}`)
+                .then(response => response.json())
+                .then(result => {
+                     let likeCount = result['likers'].length;
+                     document.querySelector(`#like-count-${post_id}`).innerHTML = likeCount;
+                })
+            })
         })
     })
 })
