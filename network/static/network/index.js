@@ -81,4 +81,14 @@ document.addEventListener('DOMContentLoaded', () => {
             })
         })
     })
+
+    // Post-box behavior
+    document.querySelectorAll('.hover-box').forEach(e => {
+        e.addEventListener('mouseover', function() {
+            this.classList.add('shadow-sm')
+        })
+        e.addEventListener('mouseout', function() {
+            this.classList.remove('shadow-sm')
+        })
+    })
 })

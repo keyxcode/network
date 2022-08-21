@@ -1,12 +1,3 @@
 textarea {
     resize: none;
 }
-
-.hover-box {
-    filter: brightness(100%);
-    transition: 0.3s;
-}
-
-.hover-box:hover {
-    filter: brightness(110%);
-}
