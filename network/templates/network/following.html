@@ -1,0 +1,16 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <!-- Banner -->
+    <div class="row border rounded shadow-sm my-3">
+        <div class="col p-5 text-center">
+            <span class="h1">Your following posts</span>
+        </div>
+    </div>
+    {% include 'network/posts.html' %}
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}

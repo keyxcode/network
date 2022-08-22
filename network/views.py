@@ -84,9 +84,30 @@ def create_post(request):
     return HttpResponseRedirect(reverse("index"))
 
 
+def profile(request, user_id):
+    user = User.objects.get(pk=user_id)
+    posts = Post.objects.filter(poster=user).order_by('-timestamp')
+
+    return render(request, "network/profile.html", {
+        "user": user,
+        "posts": posts
+    }) 
+
+
+@login_required
+def following(request):
+    follows = User.objects.get(username=request.user).follows.all()
+    posts = Post.objects.filter(poster__in=follows).order_by('-timestamp')
+
+    return render(request, "network/following.html", {
+        "posts": posts
+    })
+
+
+#==================================================================================
 @csrf_exempt
 @login_required
-def post(request, post_id):
+def api_post(request, post_id):
     # Query for requested post
     try:
         post = Post.objects.get(pk=post_id)
@@ -106,10 +127,8 @@ def post(request, post_id):
             user = User.objects.get(username=data["user"])
             if post.likers.all().contains(user):
                 post.likers.remove(user)
-                print('no')
             else:
                 post.likers.add(user)
-                print('yo')
         post.save()
         return HttpResponse(status=204)
     
@@ -120,12 +139,38 @@ def post(request, post_id):
         }, status=400)
 
 
-def profile(request, user_id):
-    user = User.objects.get(pk=user_id)
-    posts = Post.objects.filter(poster=user).order_by('-timestamp')
+@csrf_exempt
+@login_required
+def api_profile(request, profile_id):
+    # Query for requested user
+    try:
+        profile = User.objects.get(pk=profile_id)
+    except:
+        return JsonResponse({"error": "User not found."}, status=404)
+    
+    # Return user
+    if request.method == "GET":
+        return JsonResponse(profile.serialize())
+#        return JsonResponse(user.serialize())
 
-    return render(request, "network/profile.html", {
-        "user": user,
-        "posts": posts
-    }) 
+    # Update the requested user
+    if request.method == "PUT":
+        data = json.loads(request.body)
+        if data.get("follower") is not None:
+            follower = User.objects.get(username=data["follower"])
+            if profile.followers.all().contains(follower):
+                profile.followers.remove(follower)
+                follower.follows.remove(profile)
+            else:
+                profile.followers.add(follower)
+                follower.follows.add(profile)
+        profile.save()
+        return HttpResponse(status=204)
+    
+    # Request method must be PUT
+    else:
+        return JsonResponse({
+            "error": "GET or PUT request required"
+        }, status=400)
+
     

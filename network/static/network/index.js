@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 edit_form.addEventListener('submit', e => {
                     e.preventDefault();
 
-                    fetch(`post/${post_id}`, {
+                    fetch(`/api/post/${post_id}`, {
                         method: 'PUT',
                         body: JSON.stringify({
                           content: edited_post.value
@@ -65,14 +65,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.classList.add('btn-outline-primary');
             }     
             // Change the backend likes
-            fetch(`post/${post_id}`, {
+            fetch(`/api/post/${post_id}`, {
                 method: 'PUT',
                 body: JSON.stringify({
                     user: user
                 })
             })
             .then(() => {
-                fetch(`post/${post_id}`)
+                fetch(`/api/post/${post_id}`)
                 .then(response => response.json())
                 .then(result => {
                      let likeCount = result['likers'].length;
