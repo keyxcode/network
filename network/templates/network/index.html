@@ -6,12 +6,14 @@
     <form action="{% url 'create_post' %}" class="border shadow-sm rounded row my-3" method="post">
         {% csrf_token %}
             <div class="col-md-10">
-                <textarea class="form-control my-3" name="content" placeholder="What's on your mind?" rows="1"></textarea>
+                <textarea class="form-control my-3" name="content" placeholder="What's on your mind?" required rows="1"></textarea>
             </div>
             <div class="col-md-2">
                 <input class="btn btn-primary my-3 w-100" type="submit" value="Share">
             </div>
     </form>
+
+    <!-- Posts -->
     {% include 'network/posts.html' %}
 {% endblock %}
 

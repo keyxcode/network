@@ -18,7 +18,7 @@
                                 {% if request.user == post.poster %}
                                     <form class="row d-none" id="form-{{ post.id }}">
                                         <div class="col-md-10">
-                                            <textarea class="form-control mb-2" id="edited-{{ post.id }}" rows="1">{{ post.content }}</textarea>
+                                            <textarea class="form-control mb-2" id="edited-{{ post.id }}" required rows="1">{{ post.content }}</textarea>
                                         </div>
                                         <div class="col-md-2">
                                             <button class="btn btn-primary w-100" type="submit">Save</button>

@@ -3,6 +3,8 @@
 
 {% block body %}
     <!-- Profile details -->
+    <!-- user is the profile currently being viewed-->
+    <!-- request.user is the one using the site-->
     <div class="row border rounded shadow-sm my-3">
         <div class="col p-5 text-center">
             <span class="h1">{{ user.username }}</span>
@@ -30,6 +32,7 @@
         </div>
     </div>
 
+    <!-- Posts -->
     {% include 'network/posts.html' %}
 {% endblock %}
 

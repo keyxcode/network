@@ -70,6 +70,7 @@ def register(request):
         return render(request, "network/register.html")
 
 
+#==================================================================================
 def create_post(request):
     if request.method == "POST":
         content = request.POST['content']
@@ -105,20 +106,19 @@ def following(request):
 
 
 #==================================================================================
+# API
+
 @csrf_exempt
 @login_required
 def api_post(request, post_id):
-    # Query for requested post
     try:
         post = Post.objects.get(pk=post_id)
     except:
         return JsonResponse({"error": "Post not found."}, status=404)
     
-    # Return post contents
     if request.method == "GET":
         return JsonResponse(post.serialize())
 
-    # Update the requested post
     if request.method == "PUT":
         data = json.loads(request.body)
         if data.get("content") is not None:
@@ -131,8 +131,7 @@ def api_post(request, post_id):
                 post.likers.add(user)
         post.save()
         return HttpResponse(status=204)
-    
-    # Request method must be PUT
+
     else:
         return JsonResponse({
             "error": "GET or PUT request required"
@@ -142,35 +141,34 @@ def api_post(request, post_id):
 @csrf_exempt
 @login_required
 def api_profile(request, profile_id):
-    # Query for requested user
     try:
         profile = User.objects.get(pk=profile_id)
     except:
         return JsonResponse({"error": "User not found."}, status=404)
     
-    # Return user
     if request.method == "GET":
         return JsonResponse(profile.serialize())
-#        return JsonResponse(user.serialize())
 
-    # Update the requested user
     if request.method == "PUT":
         data = json.loads(request.body)
-        if data.get("follower") is not None:
-            follower = User.objects.get(username=data["follower"])
-            if profile.followers.all().contains(follower):
-                profile.followers.remove(follower)
-                follower.follows.remove(profile)
-            else:
-                profile.followers.add(follower)
-                follower.follows.add(profile)
-        profile.save()
+        if data.get("current_user") is not None:
+            current_user = User.objects.get(username=data["current_user"])
+            switch_follow_state(current_user, profile)
         return HttpResponse(status=204)
     
-    # Request method must be PUT
     else:
         return JsonResponse({
             "error": "GET or PUT request required"
         }, status=400)
 
-    
+
+def switch_follow_state(current_user, profile):
+    if profile.followers.all().contains(current_user):
+        profile.followers.remove(current_user)
+        current_user.follows.remove(profile)
+    else:
+        profile.followers.add(current_user)
+        current_user.follows.add(profile)
+        
+    current_user.save()
+    profile.save()
