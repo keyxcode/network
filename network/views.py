@@ -177,7 +177,6 @@ def api_profile(request, profile_id):
             current_user = User.objects.get(username=data["current_user"])
             switch_follow_state(current_user, profile)
         return HttpResponse(status=204)
-    
     else:
         return JsonResponse({
             "error": "GET or PUT request required"

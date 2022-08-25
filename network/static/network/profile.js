@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    // Follow button behavior
     document.querySelector('#follow-button').addEventListener('click', function() {
         const profile_id = this.dataset.profile;
         const current_user = document.querySelector('#user').innerHTML;

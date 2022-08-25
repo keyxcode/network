@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 edit_form.addEventListener('submit', e => {
                     e.preventDefault();
-
                     fetch(`/api/post/${post_id}`, {
                         method: 'PUT',
                         body: JSON.stringify({
