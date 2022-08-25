@@ -6,16 +6,32 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator
 
 from .models import *
 
 
 def index(request):
     posts = Post.objects.all().order_by('-timestamp')
+    p = paginate_posts(request, posts)
 
     return render(request, "network/index.html", {
-        "posts": posts
+        "page_obj": p.get("page_obj"),
+        "page_range": p.get("page_range"),
+        "need_paginated": p.get("need_paginated")
     })
+
+
+def paginate_posts(request, posts):
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get('page')
+
+    p = dict()
+    p["page_obj"] = paginator.get_page(page_number)
+    p["page_range"] = range(1, paginator.num_pages + 1)
+    p["need_paginated"] = True if (paginator.num_pages > 1) else False
+
+    return p
 
 
 def login_view(request):
@@ -89,9 +105,13 @@ def profile(request, user_id):
     user = User.objects.get(pk=user_id)
     posts = Post.objects.filter(poster=user).order_by('-timestamp')
 
+    p = paginate_posts(request, posts)
+
     return render(request, "network/profile.html", {
         "user": user,
-        "posts": posts
+        "page_obj": p.get("page_obj"),
+        "page_range": p.get("page_range"),
+        "need_paginated": p.get("need_paginated")
     }) 
 
 
@@ -100,8 +120,12 @@ def following(request):
     follows = User.objects.get(username=request.user).follows.all()
     posts = Post.objects.filter(poster__in=follows).order_by('-timestamp')
 
+    p = paginate_posts(request, posts)
+
     return render(request, "network/following.html", {
-        "posts": posts
+        "page_obj": p.get("page_obj"),
+        "page_range": p.get("page_range"),
+        "need_paginated": p.get("need_paginated")
     })
 
 

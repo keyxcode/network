@@ -14,10 +14,10 @@ class User(AbstractUser, models.Model):
 
 
 class Post(models.Model):
-    content = models.TextField(blank=True)
+    content = models.TextField()
     poster = models.ForeignKey("User", on_delete=models.CASCADE, null=True, related_name="all_posts")
     timestamp = models.DateTimeField(auto_now_add=True)
-    likers = models.ManyToManyField("User", related_name="liked_post")
+    likers = models.ManyToManyField("User", blank=True, related_name="liked_post")
 
     def serialize(self):
         return {
