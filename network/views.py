@@ -34,6 +34,48 @@ def paginate_posts(request, posts):
     return p
 
 
+def profile(request, user_id):
+    user = User.objects.get(pk=user_id)
+    posts = Post.objects.filter(poster=user).order_by('-timestamp')
+
+    p = paginate_posts(request, posts)
+
+    return render(request, "network/profile.html", {
+        "user": user,
+        "page_obj": p.get("page_obj"),
+        "page_range": p.get("page_range"),
+        "need_paginated": p.get("need_paginated")
+    }) 
+
+
+@login_required
+def following(request):
+    follows = User.objects.get(username=request.user).follows.all()
+    posts = Post.objects.filter(poster__in=follows).order_by('-timestamp')
+
+    p = paginate_posts(request, posts)
+
+    return render(request, "network/following.html", {
+        "page_obj": p.get("page_obj"),
+        "page_range": p.get("page_range"),
+        "need_paginated": p.get("need_paginated")
+    })
+
+
+def create_post(request):
+    if request.method == "POST":
+        content = request.POST['content']
+        poster = request.user
+
+        new_post = Post.objects.create(
+            content = content,
+            poster = poster
+        )
+        new_post.save()
+
+    return HttpResponseRedirect(reverse("index"))
+
+#==================================================================================
 def login_view(request):
     if request.method == "POST":
 
@@ -85,50 +127,6 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
-
-#==================================================================================
-def create_post(request):
-    if request.method == "POST":
-        content = request.POST['content']
-        poster = request.user
-
-        new_post = Post.objects.create(
-            content = content,
-            poster = poster
-        )
-        new_post.save()
-
-    return HttpResponseRedirect(reverse("index"))
-
-
-def profile(request, user_id):
-    user = User.objects.get(pk=user_id)
-    posts = Post.objects.filter(poster=user).order_by('-timestamp')
-
-    p = paginate_posts(request, posts)
-
-    return render(request, "network/profile.html", {
-        "user": user,
-        "page_obj": p.get("page_obj"),
-        "page_range": p.get("page_range"),
-        "need_paginated": p.get("need_paginated")
-    }) 
-
-
-@login_required
-def following(request):
-    follows = User.objects.get(username=request.user).follows.all()
-    posts = Post.objects.filter(poster__in=follows).order_by('-timestamp')
-
-    p = paginate_posts(request, posts)
-
-    return render(request, "network/following.html", {
-        "page_obj": p.get("page_obj"),
-        "page_range": p.get("page_range"),
-        "need_paginated": p.get("need_paginated")
-    })
-
-
 #==================================================================================
 # API
 
@@ -145,7 +143,7 @@ def api_post(request, post_id):
 
     if request.method == "PUT":
         data = json.loads(request.body)
-        if data.get("content") is not None:
+        if data.get("content") is not None and request.user == post.poster:
             post.content = data["content"]
         if data.get("user") is not None:
             user = User.objects.get(username=data["user"])

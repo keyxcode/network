@@ -2,16 +2,25 @@
 {% load static %}
 
 {% block body %}
-    <!-- New Post Form -->
-    <form action="{% url 'create_post' %}" class="border shadow-sm rounded row my-3" method="post">
-        {% csrf_token %}
-        <div class="col-md-10">
-            <textarea class="form-control my-3" name="content" placeholder="What's on your mind?" required rows="1"></textarea>
+    {% if user.is_authenticated %}
+        <!-- New Post Form -->
+        <form action="{% url 'create_post' %}" class="border shadow-sm rounded row my-3" method="post">
+            {% csrf_token %}
+            <div class="col-md-10">
+                <textarea class="form-control my-3" name="content" placeholder="What's on your mind?" required rows="1"></textarea>
+            </div>
+            <div class="col-md-2">
+                <input class="btn btn-primary mt-md-3 mb-3 w-100" type="submit" value="Share">
+            </div>
+        </form>
+    {% else %}
+        <!-- Call to login/ register -->
+        <div class="border shadow-sm rounded row my-3">
+            <div class="col my-3">
+                Please <a href="{% url 'login' %}">log in</a> or <a href="{% url 'register' %}">register</a> to write posts and interact with other users!
+            </div>
         </div>
-        <div class="col-md-2">
-            <input class="btn btn-primary mt-md-3 mb-3 w-100" type="submit" value="Share">
-        </div>
-    </form>
+    {% endif %}
 
     <!-- Posts -->
     {% include 'network/posts.html' %}
